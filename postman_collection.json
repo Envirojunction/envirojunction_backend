@@ -1,0 +1,404 @@
+{
+  "info": {
+    "_postman_id": "e8d7a12b-7c34-4b9e-bfa1-92b012345678",
+    "name": "Enviro Junction API",
+    "description": "Complete Postman API Collection for Enviro Junction Backend (NestJS + MongoDB).\nIncludes Auth, User Management, News, Jobs, and Tenders modules.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "authToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "userId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "General & Health",
+      "item": [
+        {
+          "name": "Root Hello",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/",
+              "host": ["{{baseUrl}}"],
+              "path": [""]
+            },
+            "description": "Returns welcome greeting from AppController."
+          },
+          "response": []
+        },
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health"]
+            },
+            "description": "Returns API health status."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Sign Up",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201 || pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (jsonData.token) {",
+                  "        pm.collectionVariables.set(\"authToken\", jsonData.token);",
+                  "        console.log(\"Saved authToken to collection variable\");",
+                  "    }",
+                  "    if (jsonData.user && jsonData.user.id) {",
+                  "        pm.collectionVariables.set(\"userId\", jsonData.user.id);",
+                  "        console.log(\"Saved userId to collection variable: \" + jsonData.user.id);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Jane Doe\",\n  \"email\": \"jane.doe@example.com\",\n  \"password\": \"Password123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/signup",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "signup"]
+            },
+            "description": "Registers a new user and returns JWT token + user details."
+          },
+          "response": []
+        },
+        {
+          "name": "Log In",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (jsonData.token) {",
+                  "        pm.collectionVariables.set(\"authToken\", jsonData.token);",
+                  "        console.log(\"Saved authToken to collection variable\");",
+                  "    }",
+                  "    if (jsonData.user && jsonData.user.id) {",
+                  "        pm.collectionVariables.set(\"userId\", jsonData.user.id);",
+                  "        console.log(\"Saved userId to collection variable: \" + jsonData.user.id);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"jane.doe@example.com\",\n  \"password\": \"Password123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            },
+            "description": "Authenticates user and returns JWT token."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Get Current User Profile",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/profile",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "profile"]
+            },
+            "description": "Retrieves authenticated user profile based on JWT token."
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Users",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["users"]
+            },
+            "description": "Retrieves list of all users in the system (requires JWT authentication)."
+          },
+          "response": []
+        },
+        {
+          "name": "Update User Profile",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Jane Doe\",\n  \"title\": \"Senior Environmental Consultant\",\n  \"headline\": \"Sustainability & Environmental Impact Assessment Specialist\",\n  \"about\": \"Experienced environmental specialist with 8+ years leading ESG initiatives and compliance auditing.\",\n  \"skills\": \"EIA, ISO 14001, Carbon Accounting, ESG Reporting\",\n  \"professional_skills\": [\n    \"Environmental Impact Assessment\",\n    \"Carbon Footprint Analysis\",\n    \"Life Cycle Assessment\",\n    \"ISO 14001 Auditing\"\n  ],\n  \"services\": [\n    \"ESG Consulting\",\n    \"Environmental Audit\",\n    \"Regulatory Compliance\"\n  ],\n  \"education\": [\n    {\n      \"title\": \"M.Sc. Environmental Science\",\n      \"name\": \"Stanford University\",\n      \"start_year\": 2016,\n      \"end_year\": 2018\n    }\n  ],\n  \"certifications\": [\n    {\n      \"title\": \"Lead Auditor ISO 14001\",\n      \"name\": \"IRCA\",\n      \"start_year\": 2019,\n      \"end_year\": 2022\n    }\n  ],\n  \"work_experience\": [\n    {\n      \"title\": \"Lead Environmental Consultant\",\n      \"name\": \"EcoGlobal Solutions\",\n      \"start_year\": 2020,\n      \"end_year\": 2024,\n      \"about\": \"Managed client carbon footprint reduction programs across APAC.\",\n      \"isPresent\": true\n    }\n  ],\n  \"location\": \"San Francisco, CA, USA\",\n  \"sectors\": [\n    \"Renewable Energy\",\n    \"Waste Management\",\n    \"Water Resources\"\n  ],\n  \"phone\": \"+14155552671\",\n  \"languages\": [\n    \"English\",\n    \"Spanish\"\n  ],\n  \"projects\": [\n    {\n      \"name\": \"Solar Farm Ecological Assessment\",\n      \"tags\": [\n        \"Solar\",\n        \"Biodiversity\",\n        \"EIA\"\n      ],\n      \"title\": \"Lead Assessor\",\n      \"projectType\": \"Renewable Infrastructure\",\n      \"date\": \"2023-08-15T00:00:00.000Z\",\n      \"details\": \"Conducted multi-seasonal biodiversity surveys and habitat mitigation plans for 200MW solar plant.\",\n      \"status\": \"Completed\"\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/{{userId}}/profile",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "{{userId}}", "profile"]
+            },
+            "description": "Updates profile details for the given user ID. (Requires JWT auth)."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "News",
+      "item": [
+        {
+          "name": "Get All News (Default)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/news",
+              "host": ["{{baseUrl}}"],
+              "path": ["news"]
+            },
+            "description": "Retrieves news articles with default pagination (page=1, limit=10)."
+          },
+          "response": []
+        },
+        {
+          "name": "Get News with Pagination & Filtering",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/news?page=1&limit=5&category=Sustainability&search=energy",
+              "host": ["{{baseUrl}}"],
+              "path": ["news"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number (default: 1)"
+                },
+                {
+                  "key": "limit",
+                  "value": "5",
+                  "description": "Number of items per page (default: 10)"
+                },
+                {
+                  "key": "category",
+                  "value": "Sustainability",
+                  "description": "Filter by news category (case-insensitive regex)"
+                },
+                {
+                  "key": "search",
+                  "value": "energy",
+                  "description": "Search keyword matching title or description"
+                }
+              ]
+            },
+            "description": "Retrieves news with custom page, limit, category, and keyword search filters."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Jobs",
+      "item": [
+        {
+          "name": "Get All Jobs (Default)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/jobs",
+              "host": ["{{baseUrl}}"],
+              "path": ["jobs"]
+            },
+            "description": "Retrieves job postings with default pagination (page=1, limit=10)."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Jobs with Pagination & Filtering",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/jobs?page=1&limit=5&category=Engineering&search=Manager",
+              "host": ["{{baseUrl}}"],
+              "path": ["jobs"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number (default: 1)"
+                },
+                {
+                  "key": "limit",
+                  "value": "5",
+                  "description": "Number of items per page (default: 10)"
+                },
+                {
+                  "key": "category",
+                  "value": "Engineering",
+                  "description": "Filter by job category"
+                },
+                {
+                  "key": "search",
+                  "value": "Manager",
+                  "description": "Search keyword matching title or description"
+                }
+              ]
+            },
+            "description": "Retrieves job opportunities filtered by category, search term, and pagination."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Tenders",
+      "item": [
+        {
+          "name": "Get All Tenders (Default)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/tenders",
+              "host": ["{{baseUrl}}"],
+              "path": ["tenders"]
+            },
+            "description": "Retrieves environmental and infrastructure tenders with default pagination."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Tenders with Pagination & Filtering",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/tenders?page=1&limit=5&category=Water&search=Treatment",
+              "host": ["{{baseUrl}}"],
+              "path": ["tenders"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number (default: 1)"
+                },
+                {
+                  "key": "limit",
+                  "value": "5",
+                  "description": "Number of items per page (default: 10)"
+                },
+                {
+                  "key": "category",
+                  "value": "Water",
+                  "description": "Filter by tender category"
+                },
+                {
+                  "key": "search",
+                  "value": "Treatment",
+                  "description": "Search keyword matching title or description"
+                }
+              ]
+            },
+            "description": "Retrieves tenders with custom pagination, category, and keyword search filters."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
