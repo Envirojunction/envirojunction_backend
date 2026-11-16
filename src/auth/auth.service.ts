@@ -7,7 +7,7 @@ import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcryptjs';
-import { User, UserDocument } from '../users/schemas/user.schema';
+import { User, UserDocument, UserStatus } from '../users/schemas/user.schema';
 import { SignUpDto } from '../users/dto/signup.dto';
 import { LoginDto } from '../users/dto/login.dto';
 
@@ -88,8 +88,14 @@ export class AuthService {
     };
   }
 
-  async socialLogin(socialDto: { email: string; name: string; provider?: string; avatar?: string }) {
-    const { email, name } = socialDto;
+  async socialLogin(socialDto: {
+    email: string;
+    name: string;
+    provider?: string;
+    avatar?: string;
+    providerId?: string;
+  }) {
+    const { email, name, avatar } = socialDto;
 
     let user = await this.userModel.findOne({ email });
     if (!user) {
@@ -101,7 +107,12 @@ export class AuthService {
         name: name || email.split('@')[0],
         email,
         password: randomPassword,
+        avatar: avatar || undefined,
+        status: UserStatus.ACTIVE,
       });
+    } else if (avatar && !user.avatar) {
+      user.avatar = avatar;
+      await user.save();
     }
 
     const token = this.jwtService.sign(
@@ -120,6 +131,9 @@ export class AuthService {
         name: user.name,
         email: user.email,
         status: user.status,
+        avatar: user.avatar,
+        title: user.title,
+        headline: user.headline,
       },
     };
   }
