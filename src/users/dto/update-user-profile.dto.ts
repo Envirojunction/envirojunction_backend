@@ -114,9 +114,17 @@ export class ProjectDto {
   @IsOptional()
   @IsString()
   status?: string;
+
+  @IsOptional()
+  @IsString()
+  location?: string;
 }
 
 export class UpdateUserProfileDto {
+  @IsOptional()
+  @IsString()
+  avatar?: string;
+
   @IsOptional()
   @IsString()
   name?: string;

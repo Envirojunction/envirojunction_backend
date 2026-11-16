@@ -55,3 +55,4 @@ logs/
 .eslintcache
 .npm/
 
+atlas-credentials.env

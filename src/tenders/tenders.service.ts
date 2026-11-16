@@ -27,15 +27,28 @@ export class TendersService {
     // Build filter
     const filter: any = {};
 
-    if (query.category) {
-      filter.category = { $regex: query.category, $options: 'i' };
+    if (query.category && query.category !== 'all') {
+      filter.$or = [
+        { sector: { $regex: query.category, $options: 'i' } },
+        { authority_type: { $regex: query.category, $options: 'i' } },
+        { category: { $regex: query.category, $options: 'i' } },
+      ];
     }
 
-    if (query.search) {
-      filter.$or = [
-        { title: { $regex: query.search, $options: 'i' } },
-        { description: { $regex: query.search, $options: 'i' } },
+    if (query.search && query.search.trim()) {
+      const searchOr = [
+        { title: { $regex: query.search.trim(), $options: 'i' } },
+        { description: { $regex: query.search.trim(), $options: 'i' } },
+        { organisation: { $regex: query.search.trim(), $options: 'i' } },
+        { sector: { $regex: query.search.trim(), $options: 'i' } },
+        { location: { $regex: query.search.trim(), $options: 'i' } },
       ];
+      if (filter.$or) {
+        filter.$and = [{ $or: filter.$or }, { $or: searchOr }];
+        delete filter.$or;
+      } else {
+        filter.$or = searchOr;
+      }
     }
 
     // Get total count
@@ -44,7 +57,8 @@ export class TendersService {
     // Get paginated results
     const data = await this.tenderModel
       .find(filter)
-      .sort({ createdAt: -1 })
+      .select({ full_content_html: 0 })
+      .sort({ _id: -1 })
       .skip(skip)
       .limit(limit)
       .exec();

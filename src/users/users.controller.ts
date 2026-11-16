@@ -15,6 +15,18 @@ export class UsersController {
     return await this.usersService.findById(req.user.userId);
   }
 
+  @Patch('profile')
+  @UseGuards(JwtAuthGuard)
+  async updateOwnProfile(
+    @Request() req: any,
+    @Body() updateUserProfileDto: UpdateUserProfileDto,
+  ) {
+    return await this.usersService.updateProfile(
+      req.user.userId,
+      updateUserProfileDto,
+    );
+  }
+
   @Get()
   @UseGuards(JwtAuthGuard)
   async getAllUsers() {

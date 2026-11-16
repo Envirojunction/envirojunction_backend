@@ -1,4 +1,4 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Param, Query, NotFoundException } from '@nestjs/common';
 import { TendersService } from './tenders.service';
 import { GetNewsQueryDto } from './dto/create-tenders.dto';
 
@@ -16,5 +16,14 @@ export class TendersController {
       page,
       limit,
     });
+  }
+
+  @Get(':id')
+  async getTenderById(@Param('id') id: string) {
+    const tender = await this.tendersService.findById(id);
+    if (!tender) {
+      throw new NotFoundException(`Tender with ID ${id} not found`);
+    }
+    return tender;
   }
 }

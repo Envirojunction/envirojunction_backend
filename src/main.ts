@@ -9,15 +9,41 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }));
 
   // Enable CORS with specific configuration
+  const defaultOrigins = [
+    'https://www.envirojunction.com',
+    'https://envirojunction.com',
+    'http://localhost:9002',
+    'http://localhost:3000',
+    'http://localhost:3001',
+    'http://localhost:5173',
+    'http://127.0.0.1:9002',
+    'http://127.0.0.1:3000',
+  ];
+
   const allowedOrigins = process.env.ALLOWED_ORIGINS
-    ? process.env.ALLOWED_ORIGINS.split(',')
-    : ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:5173'];
+    ? Array.from(new Set([...process.env.ALLOWED_ORIGINS.split(','), ...defaultOrigins]))
+    : defaultOrigins;
 
   app.enableCors({
-    origin: allowedOrigins,
+    origin: (origin, callback) => {
+      // allow requests with no origin (e.g. mobile apps, curl, server-to-server)
+      if (!origin) return callback(null, true);
+
+      // check if origin is explicitly allowed or matches local/domain patterns
+      if (
+        allowedOrigins.includes(origin) ||
+        origin.startsWith('http://localhost:') ||
+        origin.startsWith('http://127.0.0.1:') ||
+        origin.endsWith('.envirojunction.com') ||
+        origin === 'https://envirojunction.com'
+      ) {
+        return callback(null, true);
+      }
+      return callback(new Error('Not allowed by CORS'), false);
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
     maxAge: 3600,
   });
 

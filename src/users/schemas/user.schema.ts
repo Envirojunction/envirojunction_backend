@@ -95,6 +95,9 @@ export class Project {
 
   @Prop()
   status?: string;
+
+  @Prop()
+  location?: string;
 }
 
 export const ProjectSchema = SchemaFactory.createForClass(Project);
@@ -117,6 +120,9 @@ export class User {
     enum: UserStatus,
   })
   status!: UserStatus;
+
+  @Prop()
+  avatar?: string;
 
   // -------------------------
   // Profile fields

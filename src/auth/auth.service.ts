@@ -87,4 +87,40 @@ export class AuthService {
       },
     };
   }
+
+  async socialLogin(socialDto: { email: string; name: string; provider?: string; avatar?: string }) {
+    const { email, name } = socialDto;
+
+    let user = await this.userModel.findOne({ email });
+    if (!user) {
+      const randomPassword = await bcrypt.hash(
+        Math.random().toString(36).slice(-8) + Date.now().toString(36),
+        10,
+      );
+      user = await this.userModel.create({
+        name: name || email.split('@')[0],
+        email,
+        password: randomPassword,
+      });
+    }
+
+    const token = this.jwtService.sign(
+      {
+        sub: user._id.toString(),
+        email: user.email,
+      },
+      { expiresIn: '7h' },
+    );
+
+    return {
+      message: 'Social login successful',
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        status: user.status,
+      },
+    };
+  }
 }
