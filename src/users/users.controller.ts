@@ -1,5 +1,5 @@
 import { Controller, Get, UseGuards, Request, Param,
-  Patch, Body} from '@nestjs/common';
+  Patch, Body, Query} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { UpdateUserProfileDto } from './dto/update-user-profile.dto';
@@ -28,9 +28,8 @@ export class UsersController {
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard)
-  async getAllUsers() {
-    return await this.usersService.findAll();
+  async getAllUsers(@Query() query: any) {
+    return await this.usersService.findAll(query);
   }
 
   @Patch(':id/profile')

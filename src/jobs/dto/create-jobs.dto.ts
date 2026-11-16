@@ -30,4 +30,13 @@ export class GetJobsQueryDto {
 
   @IsOptional()
   search?: string;
+
+  @IsOptional()
+  location?: string;
+
+  @IsOptional()
+  job_type?: string;
+
+  @IsOptional()
+  organisation?: string;
 }

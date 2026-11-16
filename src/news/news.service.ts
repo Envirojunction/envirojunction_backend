@@ -27,15 +27,26 @@ export class NewsService {
     // Build filter
     const filter: any = {};
 
-    if (query.category) {
+    if (query.category && query.category !== 'all') {
       filter.category = { $regex: query.category, $options: 'i' };
     }
 
-    if (query.search) {
-      filter.$or = [
-        { title: { $regex: query.search, $options: 'i' } },
-        { description: { $regex: query.search, $options: 'i' } },
+    if (query.search && query.search.trim()) {
+      const searchRegex = { $regex: query.search.trim(), $options: 'i' };
+      const searchOr = [
+        { title: searchRegex },
+        { description: searchRegex },
+        { summary: searchRegex },
+        { content: searchRegex },
+        { category: searchRegex },
+        { author: searchRegex },
       ];
+      if (filter.$or) {
+        filter.$and = [{ $or: filter.$or }, { $or: searchOr }];
+        delete filter.$or;
+      } else {
+        filter.$or = searchOr;
+      }
     }
 
     // Get total count

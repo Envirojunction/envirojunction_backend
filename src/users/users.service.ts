@@ -18,8 +18,37 @@ export class UsersService {
     return await this.userModel.findOne({ email });
   }
 
-  async findAll() {
-    return await this.userModel.find().select('-password');
+  async findAll(query?: any) {
+    const filter: any = {};
+    if (query?.search && query.search.trim()) {
+      const searchRegex = { $regex: query.search.trim(), $options: 'i' };
+      filter.$or = [
+        { name: searchRegex },
+        { headline: searchRegex },
+        { title: searchRegex },
+        { role: searchRegex },
+        { jobTitle: searchRegex },
+        { about: searchRegex },
+        { skills: searchRegex },
+        { professional_skills: searchRegex },
+      ];
+    }
+    if (query?.location && query.location.trim()) {
+      const locRegex = { $regex: query.location.trim(), $options: 'i' };
+      const locConditions = [
+        { location: locRegex },
+        { city: locRegex },
+        { state: locRegex },
+        { country: locRegex },
+      ];
+      if (filter.$or) {
+        filter.$and = [{ $or: filter.$or }, { $or: locConditions }];
+        delete filter.$or;
+      } else {
+        filter.$or = locConditions;
+      }
+    }
+    return await this.userModel.find(filter).select('-password');
   }
 
   async updateProfile(

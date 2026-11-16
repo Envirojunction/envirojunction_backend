@@ -1,4 +1,4 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Query, Param, NotFoundException } from '@nestjs/common';
 import { NewsService } from './news.service';
 import { GetNewsQueryDto } from './dto/create-news.dto';
 
@@ -16,5 +16,14 @@ export class NewsController {
       page,
       limit,
     });
+  }
+
+  @Get(':id')
+  async getNewsById(@Param('id') id: string) {
+    const article = await this.newsService.findById(id);
+    if (!article) {
+      throw new NotFoundException(`News article with ID ${id} not found`);
+    }
+    return article;
   }
 }
