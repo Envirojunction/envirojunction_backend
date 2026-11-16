@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, isValidObjectId } from 'mongoose';
 import { Tender, TenderDocument } from './schemas/tenders.schema';
 import { CreateNewsDto, GetNewsQueryDto } from './dto/create-tenders.dto';
 
@@ -11,12 +11,12 @@ export class TendersService {
   ) {}
 
   async create(createNewsDto: CreateNewsDto) {
-    const newNews = await this.tenderModel.create(createNewsDto);
-    return newNews;
+    const newTender = await this.tenderModel.create(createNewsDto);
+    return newTender;
   }
 
-  async createMany(newsArray: CreateNewsDto[]) {
-    return await this.tenderModel.insertMany(newsArray);
+  async createMany(tendersArray: CreateNewsDto[]) {
+    return await this.tenderModel.insertMany(tendersArray);
   }
 
   async findAll(query: GetNewsQueryDto) {
@@ -77,15 +77,25 @@ export class TendersService {
   }
 
   async findById(id: string) {
-    return await this.tenderModel.findById(id);
+    if (isValidObjectId(id)) {
+      const byId = await this.tenderModel.findById(id);
+      if (byId) return byId;
+    }
+    return await this.tenderModel.findOne({ tender_id: id });
   }
 
   async update(id: string, updateData: Partial<CreateNewsDto>) {
-    return await this.tenderModel.findByIdAndUpdate(id, updateData, { new: true });
+    if (isValidObjectId(id)) {
+      return await this.tenderModel.findByIdAndUpdate(id, updateData, { new: true });
+    }
+    return await this.tenderModel.findOneAndUpdate({ tender_id: id }, updateData, { new: true });
   }
 
   async delete(id: string) {
-    return await this.tenderModel.findByIdAndDelete(id);
+    if (isValidObjectId(id)) {
+      return await this.tenderModel.findByIdAndDelete(id);
+    }
+    return await this.tenderModel.findOneAndDelete({ tender_id: id });
   }
 
   async deleteAll() {
