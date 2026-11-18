@@ -10,6 +10,68 @@ export enum UserStatus {
   SUSPENDED = 'suspended',
 }
 
+export enum UserRole {
+  USER = 'user',
+  ORGANISATION = 'organisation',
+  ADMIN = 'admin',
+}
+
+@Schema({ _id: false })
+export class OrganisationDetails {
+  @Prop()
+  companyName?: string;
+
+  @Prop({ type: [String], default: [] })
+  expertise?: string[];
+
+  @Prop()
+  companySize?: string;
+
+  @Prop()
+  primaryUseCase?: string;
+
+  @Prop()
+  website?: string;
+
+  @Prop()
+  linkedin?: string;
+
+  @Prop()
+  about?: string;
+
+  @Prop()
+  logo?: string;
+
+  @Prop()
+  headline?: string;
+
+  @Prop()
+  banner?: string;
+
+  @Prop()
+  headquarters?: string;
+
+  @Prop()
+  founded?: string;
+
+  @Prop()
+  phone?: string;
+
+  @Prop()
+  email?: string;
+
+  @Prop()
+  organizationType?: string;
+
+  @Prop()
+  gstNumber?: string;
+
+  @Prop()
+  cinNumber?: string;
+}
+
+export const OrganisationDetailsSchema = SchemaFactory.createForClass(OrganisationDetails);
+
 @Schema({ _id: false })
 export class Education {
   @Prop()
@@ -121,6 +183,19 @@ export class User {
   })
   status!: UserStatus;
 
+  @Prop({
+    type: String,
+    enum: UserRole,
+    default: UserRole.USER,
+  })
+  role!: UserRole;
+
+  @Prop({
+    type: OrganisationDetailsSchema,
+    default: undefined,
+  })
+  organisationDetails?: OrganisationDetails;
+
   @Prop()
   avatar?: string;
 
@@ -151,6 +226,18 @@ export class User {
     default: [],
   })
   services?: string[];
+
+  @Prop({
+    type: [String],
+    default: [],
+  })
+  followedOrganisations?: string[];
+
+  @Prop({
+    type: [String],
+    default: [],
+  })
+  followers?: string[];
 
   @Prop({
     type: [EducationSchema],

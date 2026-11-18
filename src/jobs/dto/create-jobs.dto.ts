@@ -16,6 +16,22 @@ export class CreateJobsDto {
   @IsString()
   @IsNotEmpty()
   source_url!: string;
+
+  @IsOptional()
+  @IsString()
+  organisation?: string;
+
+  @IsOptional()
+  @IsString()
+  location?: string;
+
+  @IsOptional()
+  @IsString()
+  job_type?: string;
+
+  @IsOptional()
+  @IsString()
+  deadline?: string;
 }
 
 export class GetJobsQueryDto {

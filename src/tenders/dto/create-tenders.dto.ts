@@ -16,6 +16,22 @@ export class CreateNewsDto {
   @IsString()
   @IsNotEmpty()
   source_url!: string;
+
+  @IsOptional()
+  @IsString()
+  organisation?: string;
+
+  @IsOptional()
+  @IsString()
+  sector?: string;
+
+  @IsOptional()
+  @IsString()
+  location?: string;
+
+  @IsOptional()
+  @IsString()
+  deadline?: string;
 }
 
 export class GetNewsQueryDto {

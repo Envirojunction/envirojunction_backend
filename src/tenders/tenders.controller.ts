@@ -1,6 +1,10 @@
-import { Controller, Get, Param, Query, NotFoundException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Query, NotFoundException, UseGuards, Request } from '@nestjs/common';
 import { TendersService } from './tenders.service';
-import { GetNewsQueryDto } from './dto/create-tenders.dto';
+import { CreateNewsDto, GetNewsQueryDto } from './dto/create-tenders.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { UserRole } from '../users/schemas/user.schema';
 
 @Controller('tenders')
 export class TendersController {
@@ -16,6 +20,16 @@ export class TendersController {
       page,
       limit,
     });
+  }
+
+  @Post()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ORGANISATION, UserRole.ADMIN)
+  async createTender(@Body() createTenderDto: CreateNewsDto, @Request() req: any) {
+    if (!createTenderDto.organisation) {
+      createTenderDto.organisation = req.user?.name || req.user?.email || 'Organisation';
+    }
+    return await this.tendersService.create(createTenderDto);
   }
 
   @Get(':id')

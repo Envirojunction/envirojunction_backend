@@ -10,6 +10,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
+import { OrganisationDetailsDto } from './signup.dto';
 
 export class EducationDto {
   @IsOptional()
@@ -197,4 +198,63 @@ export class UpdateUserProfileDto {
   @Type(() => ProjectDto)
   projects?: ProjectDto[];
 
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => OrganisationDetailsDto)
+  organisationDetails?: OrganisationDetailsDto;
+
+  @IsOptional()
+  @IsString()
+  website?: string;
+
+  @IsOptional()
+  @IsString()
+  linkedin?: string;
+
+  @IsOptional()
+  @IsString()
+  companySize?: string;
+
+  @IsOptional()
+  @IsString()
+  primaryUseCase?: string;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  expertise?: string[];
+
+  @IsOptional()
+  @IsString()
+  headquarters?: string;
+
+  @IsOptional()
+  @IsString()
+  organizationType?: string;
+
+  @IsOptional()
+  @IsString()
+  founded?: string;
+
+  @IsOptional()
+  @IsString()
+  banner?: string;
+
+  @IsOptional()
+  @IsString()
+  gstNumber?: string;
+
+  @IsOptional()
+  @IsString()
+  cinNumber?: string;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  followedOrganisations?: string[];
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  followers?: string[];
 }

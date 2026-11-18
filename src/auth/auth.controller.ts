@@ -3,6 +3,7 @@ import { AuthService } from './auth.service';
 import { SignUpDto } from '../users/dto/signup.dto';
 import { LoginDto } from '../users/dto/login.dto';
 import { SocialLoginDto } from './dto/social-login.dto';
+import { OrganisationSignUpDto } from './dto/organisation-signup.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -11,6 +12,16 @@ export class AuthController {
   @Post('signup')
   async signup(@Body() signUpDto: SignUpDto) {
     return await this.authService.signup(signUpDto);
+  }
+
+  @Post('signup/organisation')
+  async signupOrganisation(@Body() organisationSignUpDto: OrganisationSignUpDto) {
+    return await this.authService.signupOrganisation(organisationSignUpDto);
+  }
+
+  @Post('organisation-signup')
+  async organisationSignup(@Body() organisationSignUpDto: OrganisationSignUpDto) {
+    return await this.authService.signupOrganisation(organisationSignUpDto);
   }
 
   @Post('login')
